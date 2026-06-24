@@ -40,7 +40,7 @@ CREATOR = "Rafael da Silva Macêdo"
 #: Usuário e URL do GitHub do autor.
 GITHUB_USER = "RSMEngenhariaJF"
 GITHUB_PROFILE = "https://github.com/RSMEngenhariaJF"
-GITHUB_REPO = "https://github.com/RSMEngenhariaJF/gnss-test"
+GITHUB_REPO = "https://github.com/RSMEngenhariaJF/LC76G"
 
 
 def _fmt(value) -> str:

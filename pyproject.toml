@@ -12,8 +12,8 @@ authors = [{ name = "Rafael da Silva Macêdo" }]
 dependencies = ["pyserial", "matplotlib", "python-docx"]
 
 [project.urls]
-Homepage = "https://github.com/RSMEngenhariaJF/gnss-test"
-Repository = "https://github.com/RSMEngenhariaJF/gnss-test"
+Homepage = "https://github.com/RSMEngenhariaJF/LC76G"
+Repository = "https://github.com/RSMEngenhariaJF/LC76G"
 
 [project.scripts]
 lc76g-gnss = "lc76g_gnss.app:main"
