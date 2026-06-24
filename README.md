@@ -39,7 +39,8 @@ LC76G/
 │   ├── simulate_nmea.py        # demonstração do parser sem hardware
 │   └── make_icon.py            # gera o ícone do app (satélite)
 ├── tests/                      # test_core/devices/accuracy/weather/report
-└── docs/                       # documentação Quectel, relatórios e guias
+└── docs/                       # guia de distribuição, relatórios e CSVs
+                                #   (datasheets de terceiros não versionados)
 ```
 
 ## Instalação
