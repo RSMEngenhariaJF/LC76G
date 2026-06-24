@@ -1,0 +1,28 @@
+# Bytecode / caches Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Saída do PyInstaller
+/build/
+/dist/
+
+# Saída do Inno Setup
+/Output/
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Arquivos temporários / de trabalho
+scratch_*
+*.log
+
+# Configuração local de ferramentas
+.claude/
+
+# Sistema operacional
+Thumbs.db
+.DS_Store

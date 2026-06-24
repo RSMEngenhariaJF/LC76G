@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lc76g-gnss"
+version = "1.0.0"
+description = "Ferramenta de teste GNSS (Quectel LC76G e família) via UART em modo bypass"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{ name = "Rafael da Silva Macêdo" }]
+dependencies = ["pyserial", "matplotlib", "python-docx"]
+
+[project.urls]
+Homepage = "https://github.com/RSMEngenhariaJF/gnss-test"
+Repository = "https://github.com/RSMEngenhariaJF/gnss-test"
+
+[project.scripts]
+lc76g-gnss = "lc76g_gnss.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+lc76g_gnss = ["assets/*.ico", "assets/*.png"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
