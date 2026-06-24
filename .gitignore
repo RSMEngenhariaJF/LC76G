@@ -23,6 +23,11 @@ scratch_*
 # Configuração local de ferramentas
 .claude/
 
+# Datasheets/manuais de terceiros (Quectel) — não redistribuir no repositório
+docs/*.pdf
+docs/protocol.txt
+docs/spec.txt
+
 # Sistema operacional
 Thumbs.db
 .DS_Store
