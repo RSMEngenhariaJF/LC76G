@@ -26,7 +26,7 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
 from . import weather as wx
-from .accuracy import AccuracyPoint, sample_deviations_m
+from .accuracy import AccuracyPoint, sample_deviations_m, sample_errors_m
 
 _AZUL = RGBColor(0x1F, 0x4E, 0x79)
 _CINZA = RGBColor(0x59, 0x59, 0x59)
@@ -158,15 +158,20 @@ def _build_charts(points: Sequence[AccuracyPoint], stats: dict, tmpdir: str):
         return []
     errors = [p.error for p in points]
     pcts = [(p.index, p.error_pct) for p in points if p.error_pct is not None]
+    # Histograma do erro por AMOSTRA (cada ponto contribui com ~N amostras).
+    sample_errs = [e for p in points for e in sample_errors_m(p)]
+    hist_data = sample_errs if sample_errs else errors
 
     paths = []
     fig = Figure(figsize=(8.2, 6.4), dpi=130)
     ax1 = fig.add_subplot(2, 2, 1)
-    bins = min(15, max(3, len(errors)))
-    ax1.hist(errors, bins=bins, color="#1565c0", edgecolor="white")
-    ax1.axvline(stats["mean_error"], color="#c62828", linestyle="--",
-                linewidth=1.2, label=f"média {stats['mean_error']:+.2f} m")
-    ax1.set_title("Histograma do erro de distância")
+    hist_mean = sum(hist_data) / len(hist_data) if hist_data else 0.0
+    bins = (min(40, max(10, int(len(hist_data) ** 0.5)))
+            if len(hist_data) > 20 else max(3, len(hist_data)))
+    ax1.hist(hist_data, bins=bins, color="#1565c0", edgecolor="white")
+    ax1.axvline(hist_mean, color="#c62828", linestyle="--",
+                linewidth=1.2, label=f"média {hist_mean:+.2f} m")
+    ax1.set_title(f"Histograma do erro ({len(hist_data)} amostras)")
     ax1.set_xlabel("Erro (m)")
     ax1.set_ylabel("Frequência")
     ax1.legend(fontsize=8)
@@ -378,10 +383,12 @@ def build_precision_report(path, *, title, responsible, device, mode,
                   f"{p.measured_distance:.2f} m; usados "
                   f"{p.sats if p.sats is not None else '—'}{view_txt}):",
                   bold=True, size=10, space_after=2)
-            rows = [[i + 1, cfmt(la), cfmt(lo)]
+            errs = sample_errors_m(p)
+            rows = [[i + 1, cfmt(la), cfmt(lo),
+                     f"{errs[i]:+.2f}" if i < len(errs) else "—"]
                     for i, (la, lo) in enumerate(p.samples)]
-            _table(doc, ["Amostra", "Latitude", "Longitude"], rows,
-                   widths=[2.5, 5.0, 5.0])
+            _table(doc, ["Amostra", "Latitude", "Longitude", "Erro (m)"], rows,
+                   widths=[1.8, 4.6, 4.6, 2.5])
             doc.add_paragraph()
         if not any_samples:
             _para(doc, "Sem amostras brutas registradas.", italic=True,

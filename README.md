@@ -134,10 +134,11 @@ lc76g-gnss
   relatório passa a mostrar o erro absoluto em metros por ponto).
 - **Finalizar ensaio:** calcula o desempenho (erro médio, MAE, RMS, desvio,
   mín/máx, mediana e erro % absoluto médio) e exibe três gráficos (matplotlib):
-  **histograma do erro**, **erro percentual por ponto** e um **diagrama de
-  quartis (boxplot) da dispersão das amostras de cada ponto** — mediana, IQR e
-  outliers da repetibilidade em cada medida. Opção de salvar os gráficos em PNG;
-  os pontos também podem ser exportados em **CSV**.
+  **histograma do erro por amostra** (cada ponto contribui com ~N amostras, então
+  a distribuição já fica densa com poucos pontos), **erro percentual por ponto**
+  e um **diagrama de quartis (boxplot) da dispersão das amostras de cada ponto**.
+  Opção de salvar os gráficos em PNG; os pontos também podem ser exportados em
+  **CSV**, e o erro de cada amostra aparece no anexo de dados brutos do relatório.
 - **Hora de cada ponto:** cada medição registra a **hora local** e o **UTC do
   GNSS** (na tabela e no CSV), para correlação temporal posterior.
 - **Dados meteorológicos (automático ao finalizar):** busca o clima da posição

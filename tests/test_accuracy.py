@@ -102,6 +102,25 @@ class TestSampleDeviations(unittest.TestCase):
         self.assertAlmostEqual(devs[1], 1.0, delta=0.05)
 
 
+class TestSampleErrors(unittest.TestCase):
+    def test_empty_without_base(self):
+        p = acc.AccuracyPoint(1, 10.0, -22.0, -45.0, 10.0, 2,
+                              samples=[(-22.0, -45.0)])
+        self.assertEqual(acc.sample_errors_m(p), [])
+
+    def test_error_per_sample(self):
+        # base na origem; amostra na própria base -> erro = -known (0 - 10).
+        base = (-22.0, -45.0)
+        p = acc.AccuracyPoint(
+            1, 10.0, -22.0, -45.0, 0.0, 2,
+            samples=[base, (-22.0 + 10 / 111320.0, -45.0)],
+            base_lat=base[0], base_lon=base[1])
+        errs = acc.sample_errors_m(p)
+        self.assertEqual(len(errs), 2)
+        self.assertAlmostEqual(errs[0], -10.0, delta=0.05)   # 0 m medido - 10 informado
+        self.assertAlmostEqual(errs[1], 0.0, delta=0.1)      # ~10 m medido - 10
+
+
 class TestErrorStats(unittest.TestCase):
     def test_empty(self):
         self.assertEqual(acc.error_stats([]), {"n": 0})

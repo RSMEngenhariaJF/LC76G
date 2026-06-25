@@ -87,6 +87,8 @@ class AccuracyPoint:
     time_local: Optional[str] = None   # hora local da medição (YYYY-MM-DD HH:MM:SS)
     gnss_utc: Optional[str] = None     # UTC do GNSS na última amostra (hhmmss.sss)
     samples: list = field(default_factory=list)  # amostras brutas [(lat, lon), ...]
+    base_lat: Optional[float] = None   # posição de onde a distância foi medida
+    base_lon: Optional[float] = None   # (origem ou ponto anterior, conforme o modo)
 
     @property
     def error(self) -> float:
@@ -115,6 +117,23 @@ def sample_deviations_m(point: AccuracyPoint) -> List[float]:
     if not point.samples:
         return []
     return [haversine_m(point.lat, point.lon, la, lo)
+            for la, lo in point.samples
+            if la is not None and lo is not None]
+
+
+def sample_errors_m(point: AccuracyPoint) -> List[float]:
+    """Erro de distância (m) de **cada amostra bruta** do ponto.
+
+    Para cada amostra, mede a distância da base (origem ou ponto anterior) até
+    a amostra e subtrai a distância informada — ou seja, o mesmo erro do ponto,
+    mas calculado por amostra. Permite montar um histograma rico já com poucos
+    pontos (cada ponto contribui com ~N amostras). Lista vazia se faltar base
+    ou amostras.
+    """
+    if not point.samples or point.base_lat is None or point.base_lon is None:
+        return []
+    return [haversine_m(point.base_lat, point.base_lon, la, lo)
+            - point.known_distance
             for la, lo in point.samples
             if la is not None and lo is not None]
 

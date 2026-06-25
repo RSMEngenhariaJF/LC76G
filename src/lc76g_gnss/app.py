@@ -800,7 +800,8 @@ class GpsBypassApp:
                 n_samples=n, hdop=hdop, sats=sats, sats_in_view=in_view,
                 view_breakdown=breakdown,
                 time_local=time_local, gnss_utc=self.last_fix.utc,
-                samples=list(self.acc_samples))
+                samples=list(self.acc_samples),
+                base_lat=base_lat, base_lon=base_lon)
             self.acc_points.append(point)
             self.acc_last_pos = (lat, lon)   # avança a base para o próximo trecho
             pct = point.error_pct
@@ -877,15 +878,21 @@ class GpsBypassApp:
         errors = [p.error for p in self.acc_points]
         pcts = [(p.index, p.error_pct) for p in self.acc_points
                 if p.error_pct is not None]
+        # Histograma: erro de CADA amostra de todos os pontos (rico já com
+        # poucos pontos). Cai para o erro por ponto se não houver amostras.
+        sample_errs = [e for p in self.acc_points
+                       for e in accuracy.sample_errors_m(p)]
+        hist_data = sample_errs if sample_errs else errors
 
         fig = Figure(figsize=(8.6, 6.6), dpi=100)
-        # Histograma do erro
         ax1 = fig.add_subplot(2, 2, 1)
-        bins = min(15, max(3, len(errors)))
-        ax1.hist(errors, bins=bins, color="#1565c0", edgecolor="white")
-        ax1.axvline(stats["mean_error"], color="#c62828", linestyle="--",
-                    linewidth=1.2, label=f"média {stats['mean_error']:+.2f} m")
-        ax1.set_title("Histograma do erro de distância")
+        hist_mean = sum(hist_data) / len(hist_data) if hist_data else 0.0
+        bins = (min(40, max(10, int(len(hist_data) ** 0.5)))
+                if len(hist_data) > 20 else max(3, len(hist_data)))
+        ax1.hist(hist_data, bins=bins, color="#1565c0", edgecolor="white")
+        ax1.axvline(hist_mean, color="#c62828", linestyle="--",
+                    linewidth=1.2, label=f"média {hist_mean:+.2f} m")
+        ax1.set_title(f"Histograma do erro ({len(hist_data)} amostras)")
         ax1.set_xlabel("Erro (m)")
         ax1.set_ylabel("Frequência")
         ax1.legend(fontsize=8)
